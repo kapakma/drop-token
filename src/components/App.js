@@ -1,19 +1,22 @@
 import './App.css';
 import { useReducer, useEffect } from 'react';
+import qs from 'qs';
+import axios from 'axios';
 import { isConnect4 } from '../utils';
 import Board from './Board';
-import Overlay from './Overlay';
-import Console from './Console';
+import StartScreen from './StartScreen';
+import GameOverScreen from './GameOverScreen';
 
-const numRows = 6;
-const numCols = 7;
+const numRows = 4;//6;
+const numCols = 4;//7;
 const boardSize = numRows * numCols;
 
 const initialState = {
-    winner: 0,
-    currentUser: 1,    
-    lastMove: [],
-    numMoves: 0,
+    gameStart: false,
+    currentPlayer: 0,
+    winner: -1,
+    moves: [],
+    lastPosition: [],    
     board: Array(numRows).fill(Array(numCols).fill(0))
 }
 
@@ -32,14 +35,14 @@ function reducer(state, action) {
             
             const newRow = [
                 ...state.board[rowIndex].slice(0, action.columnIndex),
-                state.currentUser,
+                state.currentPlayer,
                 ...state.board[rowIndex].slice(action.columnIndex + 1)
             ];
 
             return {
-                ...state,                
-                lastMove: [rowIndex, action.columnIndex],
-                numMoves: state.numMoves + 1,
+                ...state,
+                lastPosition: [rowIndex, action.columnIndex],
+                moves: [...state.moves, action.columnIndex],
                 board: [
                     ...state.board.slice(0, rowIndex),
                     newRow,
@@ -48,37 +51,66 @@ function reducer(state, action) {
             };
 
         case 'CHECK_WINNER':
-            const connect4 = isConnect4(state.board, state.lastMove);
-            const user = !connect4 ? (state.currentUser === 1 ? 2 : 1) : state.currentUser;
+            const connect4 = isConnect4(state.board, state.lastPosition);
+            const user = connect4 ? state.currentPlayer : (state.currentPlayer === 1 ? 2 : 1);
 
             return {
                 ...state,
-                winner: connect4 ? state.currentUser : (state.numMoves === boardSize ? 3 : 0),
-                currentUser: user
+                winner: connect4 ? state.currentPlayer : (state.moves.length === boardSize ? 0 : -1),
+                currentPlayer: user,
             };
-
-        case 'RESET_GAME': 
-            return initialState;
-   
+        case 'START_GAME': 
+            return {
+                ...initialState,
+                currentPlayer: action.firstPlayer,
+                gameStart: true
+            };
+        case 'RESET_GAME':
+            return {
+                ...initialState
+            };
         default:
             return state;
     }
 }
 
+function sendMoveRequest() {
+    /*
+    axios.get('https://w0ayb2ph1k.execute-api.us-west-2.amazonaws.com/production?moves=[0,0,3,2,3]', {
+            
+        })
+        .then(res => {
+            const data = res.data;
+            console.log(res.data);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+   */
+}
+
 function App() {
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    function dropToken(colIndex) {
+    function handleStartGame(player) {
         dispatch({
-            type: 'DROP_TOKEN',
-            columnIndex: colIndex
+            type: 'START_GAME',
+            firstPlayer: player
         });
     }
 
-    function resetGame() {
+    function handleResetGame() {
         dispatch({
             type: 'RESET_GAME'
-        })
+        });
+    }
+
+    function handleDropToken(columnIndex) {
+        dispatch({
+            type: 'DROP_TOKEN',
+            columnIndex: columnIndex
+        });
+        sendMoveRequest();
     }
 
     useEffect(() => {
@@ -87,15 +119,23 @@ function App() {
         });
     }, [state.board]);
 
+    useEffect(() => {
+        dispatch({
+            type: 'RESET_GAME'
+        });
+    }, []);
+
     return (
         <div className="App">
             <div className="screen">
-                <Board numRows={numRows} numCols={numCols} dropToken={dropToken} data={state.board} />
+                <Board numRows={numRows} numCols={numCols} data={state.board} dropToken={handleDropToken} />
                 {
-                    state.winner > 0 ? <Overlay status={state.winner} resetGame={resetGame}/> : <></>
+                    !state.gameStart && <StartScreen onStartGame={handleStartGame} />
+                }
+                {
+                    state.winner > -1 && <GameOverScreen winner={state.winner} onResetGame={handleResetGame} />
                 }
             </div>
-            <Console user={state.currentUser} />
         </div>
     );
 }
