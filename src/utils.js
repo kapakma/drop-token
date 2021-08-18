@@ -19,7 +19,7 @@ function isColumnConnect(data, rowIndex, colIndex) {
 }
 
 function isRowConnect(data, rowIndex, colIndex) {
-    const arr = data[rowIndex].slice(Math.max(0, colIndex - CONNECT_SIZE - 1), Math.min(data[rowIndex].length, colIndex + CONNECT_SIZE));
+    const arr = data[rowIndex].slice(Math.max(0, colIndex - CONNECT_SIZE + 1), Math.min(data[rowIndex].length, colIndex + CONNECT_SIZE));
     return isArrayConnect(arr, data[rowIndex][colIndex]);
 }
 
@@ -61,7 +61,7 @@ function isDiagonalConnect2(data, rowIndex, colIndex) {
         j--;
         count++;
     }
- //   console.log(coord)
+
     return isArrayConnect(arr, data[rowIndex][colIndex]);
 }
 
