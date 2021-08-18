@@ -18,11 +18,18 @@ const initialState = {
     moves: [],
     lastPosition: [],
     board: Array(numRows).fill(Array(numCols).fill(0))
-}
+};
 
-function reducer(state, action) {
+const actionTypes = {
+    startGame: 'START_GAME',
+    resetGame: 'RESET_GAME',
+    dropToken: 'DROP_TOKEN',
+    checkWinner: 'CHECK_WINNER',
+};
+
+function gameReducer(state, action) {
     switch(action.type) {
-        case 'DROP_TOKEN':
+        case actionTypes.dropToken:
             let rowIndex = state.board.slice().reverse().findIndex(row => 
                     row[action.columnIndex] === 0
                 );
@@ -52,7 +59,7 @@ function reducer(state, action) {
                     ...state.board.slice(rowIndex + 1)
                 ]
             };
-        case 'CHECK_WINNER':
+        case actionTypes.checkWinner:
             const connect4 = isConnect4(state.board, state.lastPosition);
             const user = connect4 ? state.currentPlayer : (state.currentPlayer === 1 ? 2 : 1);
 
@@ -61,47 +68,47 @@ function reducer(state, action) {
                 winner: connect4 ? state.currentPlayer : (state.moves.length === boardSize ? 0 : -1),
                 currentPlayer: user,
             };
-        case 'START_GAME': 
+        case actionTypes.startGame: 
             return {
                 ...initialState,
                 currentPlayer: action.firstPlayer,
                 gameStart: true
             };
-        case 'RESET_GAME':
+        case actionTypes.resetGame:
             return {
                 ...initialState
             };
         default:
-            return state;
+            throw new Error(`Unknown action type: ${action.type}`);
     }
 }
 
 function App() {
-    const [state, dispatch] = useReducer(reducer, initialState);
+    const [state, dispatch] = useReducer(gameReducer, initialState);
 
     function handleStartGame(player) {
         dispatch({
-            type: 'START_GAME',
+            type: actionTypes.startGame,
             firstPlayer: player
         });
     }
 
     function handleResetGame() {
         dispatch({
-            type: 'RESET_GAME'
+            type: actionTypes.resetGame
         });
     }
 
     function handleDropToken(columnIndex) {
         dispatch({
-            type: 'DROP_TOKEN',
+            type: actionTypes.dropToken,
             columnIndex: columnIndex
         });
     }
 
     useEffect(() => {
         dispatch({
-            type: 'CHECK_WINNER'
+            type: actionTypes.checkWinner
         });
     }, [state.board]);
 
@@ -112,7 +119,7 @@ function App() {
                     if (response.data && response.data.length > 0) {
                         const columnIndex = response.data[response.data.length - 1];
                         dispatch({
-                            type: 'DROP_TOKEN',
+                            type: actionTypes.dropToken,
                             columnIndex: columnIndex
                         });
                     }
