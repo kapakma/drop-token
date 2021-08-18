@@ -1,8 +1,10 @@
-function GameOverScreen({winner, onResetGame}) {
+function GameOverScreen({winner, onReset}) {
     return (
-        <div className='overlay'>
-            <h1>{ winner === 0 ? 'Draw Game' : `Player ${winner} Win` }</h1>
-            <button className="btn btn-primary btn-lg" onClick={() => onResetGame()}>Play Again?</button>
+        <div className="overlay">
+            <div className="content">
+                <h1>{ winner === 0 ? 'Draw Game' : `Player ${winner} Win` }</h1>
+                <button className="btn btn-primary btn-lg" onClick={() => onReset()}>Play Again?</button>
+            </div>
         </div>
     );
 }

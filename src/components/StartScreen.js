@@ -1,10 +1,12 @@
-function StartScreen({onStartGame}) {
+function StartScreen({onStart}) {
     return (
         <div className='overlay'>
-            <h1>Start First?</h1>
-            <div>
-                <button className="btn btn-primary btn-lg" onClick={() => onStartGame(1)}>Yes</button>&nbsp;&nbsp;
-                <button className="btn btn-primary btn-lg" onClick={() => onStartGame(2)}>No</button>
+            <div className="content">
+                <h1>Start First?</h1>
+                <div>
+                    <button className="btn btn-primary btn-lg" onClick={() => onStart(1)}>Yes</button>&nbsp;&nbsp;
+                    <button className="btn btn-primary btn-lg" onClick={() => onStart(2)}>No</button>
+                </div>
             </div>
         </div>
     );
