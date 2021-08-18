@@ -51,24 +51,23 @@ export function reducer(state, action) {
             };
         case actionTypes.checkWinner:
             const connect4 = isConnect4(state.board, state.lastPosition);
-            const user = connect4 ? state.currentPlayer : (state.currentPlayer === 1 ? 2 : 1);
-
+            const winner = (connect4 ? state.currentPlayer : state.moves.length === BOARD_SIZE ? 0 : -1);
             return {
                 ...state,
-                winner: connect4 ? state.currentPlayer : (state.moves.length === BOARD_SIZE ? 0 : -1),
-                currentPlayer: user,
+                winner: winner,
+                currentPlayer: (winner > -1) ? 0 : (state.currentPlayer === 1 ? 2 : 1)
             };
         case actionTypes.startGame: 
             return {
-                ...initialState,
-                currentPlayer: action.firstPlayer,
-                gameStart: true
+                ...state,
+                gameStart: true,
+                currentPlayer: action.firstPlayer
             };
         case actionTypes.resetGame:
             return {
                 ...initialState
             };
         default:
-            throw new Error(`Unknown action type: ${action.type}`);
+            return state;
     }
 }
