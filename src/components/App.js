@@ -1,17 +1,14 @@
 import './App.css';
 import { useReducer, useEffect } from 'react';
 import axios from 'axios';
-import { gameReducer, initialState, actionTypes } from '../reducers/gameReducer';
+import { SERVICE_URL, NUM_ROWS, NUM_COLS } from '../constants';
+import { reducer, initialState, actionTypes } from '../reducers/gameReducer';
 import Board from './Board';
 import StartScreen from './StartScreen';
 import GameOverScreen from './GameOverScreen';
 
-const serviceUrl = 'https://w0ayb2ph1k.execute-api.us-west-2.amazonaws.com/production';
-const numRows = 4;
-const numCols = 4;
-
 function App() {
-    const [state, dispatch] = useReducer(gameReducer, initialState);
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     function handleStart(player) {
         dispatch({
@@ -41,9 +38,9 @@ function App() {
 
     useEffect(() => {
         if (state.currentPlayer === 2) {
-            axios.get(`${serviceUrl}?moves=[${state.moves.join(',')}]`)
+            axios.get(`${SERVICE_URL}?moves=[${state.moves.join(',')}]`)
                 .then(response => {
-                    if (response.data && response.data.length > 0) {
+                    if (response.data && response.data.length) {
                         const columnIndex = response.data[response.data.length - 1];
                         dispatch({
                             type: actionTypes.dropToken,
@@ -58,12 +55,12 @@ function App() {
     return (
         <div className="App">
             <div className="screen">
-                <Board numRows={numRows} numCols={numCols} data={state.board} onTokenDrop={handleTokenDrop} />
+                <Board numRows={NUM_ROWS} numCols={NUM_COLS} data={state.board} onTokenDrop={handleTokenDrop} />
                 {
                     !state.gameStart && <StartScreen onStart={handleStart} />
                 }
                 {
-                    state.winner !== -1 && <GameOverScreen winner={state.winner} onReset={handleReset} />
+                    state.winner > -1 && <GameOverScreen winner={state.winner} onReset={handleReset} />
                 }
             </div>
         </div>

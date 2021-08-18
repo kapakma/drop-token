@@ -1,8 +1,5 @@
+import { NUM_ROWS, NUM_COLS, BOARD_SIZE } from '../constants';
 import { isConnect4 } from '../utils';
-
-const numRows = 4;
-const numCols = 4;
-const boardSize = numRows * numCols;
 
 export const actionTypes = {
     startGame: 'START_GAME',
@@ -17,10 +14,10 @@ export const initialState = {
     winner: -1,
     moves: [],
     lastPosition: [],
-    board: Array(numRows).fill(Array(numCols).fill(0))
+    board: Array(NUM_ROWS).fill(Array(NUM_COLS).fill(0))
 };
 
-export function gameReducer(state, action) {
+export function reducer(state, action) {
     switch(action.type) {
         case actionTypes.dropToken:
             let rowIndex = state.board.slice().reverse().findIndex(row => 
@@ -58,7 +55,7 @@ export function gameReducer(state, action) {
 
             return {
                 ...state,
-                winner: connect4 ? state.currentPlayer : (state.moves.length === boardSize ? 0 : -1),
+                winner: connect4 ? state.currentPlayer : (state.moves.length === BOARD_SIZE ? 0 : -1),
                 currentPlayer: user,
             };
         case actionTypes.startGame: 
