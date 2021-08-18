@@ -1,5 +1,4 @@
 import { NUM_ROWS, NUM_COLS, CONNECT_SIZE } from './constants';
-const MAX_LENGTH = 2 * CONNECT_SIZE;
 
 export function isConnect4(data, position) {
     if (position.length === 2) {
@@ -28,41 +27,53 @@ function isDiagonalConnect(data, rowIndex, colIndex) {
 }
 
 function isDiagonalConnect1(data, rowIndex, colIndex) {
-    let i = rowIndex - CONNECT_SIZE + 1, 
-        j = colIndex - CONNECT_SIZE + 1,
-        count = 1,
-        arr = [];
+    const val = data[rowIndex][colIndex];
+    let count = 1;
 
-    while (count < MAX_LENGTH && i < data.length && j < data[0].length) {
-        if (data[i] !== undefined && data[i][j] !== undefined) {
-            arr.push(data[i][j]);
+    for (let i = rowIndex-1, j = colIndex-1; 
+            count < CONNECT_SIZE && i >= 0 && j >= 0; 
+            i--, j--) {
+        if (data[i][j] !== val) {
+            break;
         }
-        i++;
-        j++;
         count++;
     }
 
-    return isArrayConnect(arr, data[rowIndex][colIndex]);
+    for (let i = rowIndex+1, j = colIndex+1; 
+            count < CONNECT_SIZE && i < NUM_ROWS && j < NUM_COLS; 
+            i++, j++) {
+        if (data[i][j] !== val) {
+            break;
+        }
+        count++;
+    }
+
+    return (count === CONNECT_SIZE);
 }
 
 function isDiagonalConnect2(data, rowIndex, colIndex) {
-    let i = rowIndex - CONNECT_SIZE + 1, 
-        j = colIndex + CONNECT_SIZE - 1,
-        count = 1,
-        arr = [];
-    
-    let coord = [];
-    while (count < MAX_LENGTH && i < data.length && j >= 0) {
-        if (data[i] !== undefined && data[i][j] !== undefined) {
-            arr.push(data[i][j]);
+    const val = data[rowIndex][colIndex];
+    let count = 1;
+
+    for (let i = rowIndex-1, j = colIndex+1; 
+            count < CONNECT_SIZE && i >= 0 && j < NUM_COLS; 
+            i--, j++) {
+        if (data[i][j] !== val) {
+            break;
         }
-        coord.push(`${i},${j}`);
-        i++;
-        j--;
         count++;
     }
 
-    return isArrayConnect(arr, data[rowIndex][colIndex]);
+    for (let i = rowIndex+1, j = colIndex-1; 
+            count < CONNECT_SIZE && i < NUM_ROWS && j >= 0; 
+            i++, j--) {
+        if (data[i][j] !== val) {
+            break;
+        }
+        count++;
+    }
+
+    return (count === CONNECT_SIZE);
 }
 
 function isArrayConnect(arr, val) {
