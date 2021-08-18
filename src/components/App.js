@@ -33,11 +33,9 @@ function App() {
     }
 
     useEffect(() => {
-        if (state.gameStart) {
-            dispatch({
-                type: actionTypes.checkWinner
-            });
-        }
+        dispatch({
+            type: actionTypes.checkWinner
+        });
     }, [state.board]);
 
     useEffect(() => {
