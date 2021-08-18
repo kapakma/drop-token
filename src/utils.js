@@ -1,12 +1,11 @@
 import { NUM_ROWS, NUM_COLS, CONNECT_SIZE } from './constants';
+const MAX_LENGTH = 2 * CONNECT_SIZE;
 
-export function isConnect4(data, pos) {
-    if (pos.length === 2) {
-        const rowIndex = pos[0];
-        const colIndex = pos[1];
+export function isConnect4(data, position) {
+    if (position.length === 2) {
+        const [rowIndex, colIndex] = position;
         if (rowIndex < NUM_ROWS && colIndex < NUM_COLS) {
-            return isColumnConnect(data, rowIndex, colIndex) || 
-                    isRowConnect(data, rowIndex, colIndex) || 
+            return isColumnConnect(data, rowIndex, colIndex) || isRowConnect(data, rowIndex, colIndex) || 
                     isDiagonalConnect(data, rowIndex, colIndex);
         }
     }
@@ -25,18 +24,16 @@ function isRowConnect(data, rowIndex, colIndex) {
 }
 
 function isDiagonalConnect(data, rowIndex, colIndex) {
-    return isDiagonalConnect1(data, rowIndex, colIndex) || 
-            isDiagonalConnect2(data, rowIndex, colIndex);
+    return isDiagonalConnect1(data, rowIndex, colIndex) || isDiagonalConnect2(data, rowIndex, colIndex);
 }
 
 function isDiagonalConnect1(data, rowIndex, colIndex) {
-    const maxSize = 2 * CONNECT_SIZE;
     let i = rowIndex - CONNECT_SIZE + 1, 
         j = colIndex - CONNECT_SIZE + 1,
         count = 1,
         arr = [];
 
-    while (count < maxSize && i < data.length && j < data[0].length) {
+    while (count < MAX_LENGTH && i < data.length && j < data[0].length) {
         if (data[i] !== undefined && data[i][j] !== undefined) {
             arr.push(data[i][j]);
         }
@@ -49,14 +46,13 @@ function isDiagonalConnect1(data, rowIndex, colIndex) {
 }
 
 function isDiagonalConnect2(data, rowIndex, colIndex) {
-    const maxSize = 2 * CONNECT_SIZE;
     let i = rowIndex - CONNECT_SIZE + 1, 
         j = colIndex + CONNECT_SIZE - 1,
         count = 1,
         arr = [];
     
     let coord = [];
-    while (count < maxSize && i < data.length && j >= 0) {
+    while (count < MAX_LENGTH && i < data.length && j >= 0) {
         if (data[i] !== undefined && data[i][j] !== undefined) {
             arr.push(data[i][j]);
         }
