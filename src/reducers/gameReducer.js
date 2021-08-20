@@ -5,7 +5,6 @@ export const actionTypes = {
     startGame: 'START_GAME',
     resetGame: 'RESET_GAME',
     dropToken: 'DROP_TOKEN',
-    checkWinner: 'CHECK_WINNER',
 };
 
 export const initialState = {
@@ -13,7 +12,6 @@ export const initialState = {
     currentPlayer: 0,
     winner: -1,
     moves: [],
-    lastPosition: [],
     board: Array(NUM_ROWS).fill(Array(NUM_COLS).fill(0))
 };
 
@@ -36,24 +34,25 @@ export function reducer(state, action) {
                 ...state.board[rowIndex].slice(action.columnIndex + 1)
             ];
 
+            const newBoard = [
+                ...state.board.slice(0, rowIndex),
+                newRow,
+                ...state.board.slice(rowIndex + 1)
+            ];
+
+            const moves = [
+                ...state.moves, 
+                action.columnIndex
+            ];
+
+            const connect4 = isConnect4(newBoard, [rowIndex, action.columnIndex]);
+            
+            const winner = (connect4 ? state.currentPlayer : moves.length === BOARD_SIZE ? 0 : -1);
+
             return {
                 ...state,
-                lastPosition: [rowIndex, action.columnIndex],
-                moves: [
-                    ...state.moves, 
-                    action.columnIndex
-                ],
-                board: [
-                    ...state.board.slice(0, rowIndex),
-                    newRow,
-                    ...state.board.slice(rowIndex + 1)
-                ]
-            };
-        case actionTypes.checkWinner:
-            const connect4 = isConnect4(state.board, state.lastPosition);
-            const winner = (connect4 ? state.currentPlayer : state.moves.length === BOARD_SIZE ? 0 : -1);
-            return {
-                ...state,
+                moves: moves,
+                board: newBoard,
                 winner: winner,
                 currentPlayer: (winner > -1) ? 0 : (state.currentPlayer === 1 ? 2 : 1)
             };

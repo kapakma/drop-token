@@ -33,12 +33,6 @@ function App() {
     }
 
     useEffect(() => {
-        dispatch({
-            type: actionTypes.checkWinner
-        });
-    }, [state.board]);
-
-    useEffect(() => {
         if (state.currentPlayer === 2) {
             setLoading(true);
             axios.get(`${SERVICE_URL}?moves=[${state.moves.join(',')}]`)
